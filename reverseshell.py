@@ -10,14 +10,18 @@ class shell(object):
     exiting = False
 
     functions = functions.functions(host, port)
+    def main(self):
+        while (self.notConnected and not self.exiting):
+            try:
+                self.notConnected = False
+                self.exiting = self.functions.start()
+                self.notConnected = True
+            except:
+                self.notConnected = True
 
-    while(notConnected and not exiting):
-        try:
-            notConnected = False
-            exiting = functions.start()
-            notConnected = True
-        except:
-            notConnected = True
+if __name__ == '__main__':
+    shell().main()
+
 
 
 
