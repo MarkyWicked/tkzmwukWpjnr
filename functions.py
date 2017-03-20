@@ -46,8 +46,14 @@ class functions(object):
                     version = self.updater.getVersion()
                     soc.send(version + "\n")
 
-                elif data == "persistence\n":
+                elif data == "persistence create\n":
                     soc.send(self.persistence.doPersistence())
+
+                elif data == "persistence check\n":
+                    soc.send(self.persistence.checkPersistence())
+
+                elif data == "persistence delete\n":
+                    soc.send(self.persistence.deletePersistence())
 
                 elif data.startswith("getFile("):
                     url = data[8:-2]
